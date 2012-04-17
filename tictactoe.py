@@ -1,41 +1,38 @@
 
-
+from random import randrange
 
 print "Tic-Tac-Toe Program"
 print "To play, take turns playing the coordinates below"
 
-print "--------------------------"
+
 print "|	LT	|	CT	|	RT	|"
 print "|	LC	|	CC	|	RC	|"
 print "|	LB	|	CB	|	RB	|"
-print "--------------------------"
 
-possMoves = [LT,CT,RT,LC,CC,RC,LB,CB,RB]
-top = ["","",""]
-middle = ["","",""]
-bottom = ["","",""]
+possMoves = [["LT",""],["CT",""],["RT",""],["LC",""],["CC",""],["RC",""],["LB",""],["CB",""],"RB",""]]
 
-# add random element to who goes first
-turn = 1 # 1 = x first, 2 = o first
+# initial turn
+# imported from random module -- gives 1 or 2 pseudorandomly
+turn = randrange(1,3) # 1 = x first, 2 = o first
+
 
 #def input(possMoves): # takes a list of possible moves
-while True:
-	if (turn % 2) == 1  # if turn is even
-		print "x's turn"
+while turn <= 9:
+	if (turn % 2) == 1:  # if turn is even
+		prompt = "x's turn: "
 	else:
-		print "y's turn"
+		prompt = "y's turn: "
 		
-	doMove = raw_input("move: ")
-	if doMove in possMoves
-		parser1(doMove)	
-		return doMove
-		possMoves.remove(possMoves.index(doMove))
+	doMove = raw_input(prompt)
+	if doMove in possMoves:
+		#parser1(doMove)	
+		print doMove
+		possMoves.remove(doMove)
 		turn += 1
 	else:
-		print "invalid input"
-		return 0
+		print "invalid input/move"
 
-def parser1(x,topList,centerList,bottomList)):
+def parser1(x,topList,centerList,bottomList):
 	x = list(x) # from http://mail.python.org/pipermail/tutor/2005-August/040892.html
 	if x[0] == "L":
 		parser2(x[1],0,topList)
@@ -49,12 +46,15 @@ def parser1(x,topList,centerList,bottomList)):
 def parser2(toParse,otherHalf,moveList):
 	if toParse == "T":
 		if otherHalf == 0: # LT
-			
-		elif otherHalf == 1 # CT
-		elif otherHalf == 2 # RT
+			pass
+		elif otherHalf == 1: # CT
+			pass
+		elif otherHalf == 2: # RT
+			pass
 	elif toParse == "C":
+		pass
 	elif toParse == "B":
-		
+		pass
 
 
 
