@@ -25,6 +25,8 @@ def checkWin(ownership):
 	# list 2 = all indices that o owns e.g. [2,4]
 	# if len(list) < 3: skip; can't possibly be a winner
 	# if somebody owns one of eight three-digit combinations then winner
+	#if elements of combo are present in ownership: win condition
+	# from here http://stackoverflow.com/questions/1388818/how-can-i-compare-two-lists-in-python-and-return-matches
 	
 	# constants
 	xs = []
@@ -41,26 +43,26 @@ def checkWin(ownership):
 		else:
 			pass
 		index += 1
-	print xs
-	print os
+	#print xs # debug
+	#print os # debug
 	
-	if (len(xs) < 3) or (len(os) < 3):
-		return 0
-	else:
-		player = xs
-		while True:
-			for combo in combos:
-				#if elements of combo are present in ownership: win condition
-				# from here http://stackoverflow.com/questions/1388818/how-can-i-compare-two-lists-in-python-and-return-matches
-				if len(set(combo) & set(player)) == 3:
-					winner = player
-			if player == os:
-				break
-			player = os	
-		if winner == xs:
-			return 1
-		elif winner == os:
-			return 2
+	
+	
+	
+	# if (len(xs) < 3) or (len(os) < 3):
+		# return 0
+	# else:	
+	players = [xs,os]
+	for combo in combos:
+		for player in players:
+			if len(set(player) & set(combo)) == 3:
+				if player == xs:
+					return 1
+				elif player == os:
+					return 2
+				else:
+					print "unexpected winner"
+				
 			
 		
 print "Tic-Tac-Toe Program"
@@ -100,11 +102,13 @@ while turn < 10:
 		possMoves[coordIndex] = ""
 		printBoard(ownership)
 		winner = checkWin(ownership)
-		print winner # debug
+		#print winner # debug
 		if winner == 1:
-			print "x wins!"
+			print "X wins!"
+			break
 		elif winner == 2:
-			print "o wins!"
+			print "O wins!"
+			break
 		turn += 1
 		#print possMoves
 		#print possStrings
