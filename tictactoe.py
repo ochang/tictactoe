@@ -18,22 +18,50 @@ def printBoard(board):
 		print "----------------------------------------"
 				
 def checkWin(ownership):
-	xs = 
-	os = 
-
+	""" 0 = no winner, 1 = x winner, 2 = o winner"""
 	# split into two lists which are ordered
 	# all non-owned squares = 25
 	# list1 = all indices that x owns e.g. [0,1]
 	# list 2 = all indices that o owns e.g. [2,4]
 	# if len(list) < 3: skip; can't possibly be a winner
 	# if somebody owns one of eight three-digit combinations then winner
-	# combos = 012,345,687,036,147,258,048,246
 	
-	# obvious idea stolen from here http://en.literateprograms.org/Tic_Tac_Toe_(Python)#chunk use:tictactoe.py
-	# store the combos as lists -- duh
-	combos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
-	for combo in combos:
-		if # elements of combo are present in ownership: win condition
+	# constants
+	xs = []
+	os = []
+	combos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]] # winning combinations
+	
+	# sort ownership into two lists 
+	index = 0
+	while index < 9:
+		if ownership[index] == "X ":
+			xs.append(index)
+		elif ownership[index] == "O ":
+			os.append(index)
+		else:
+			pass
+		index += 1
+	print xs
+	print os
+	
+	if (len(xs) < 3) or (len(os) < 3):
+		return 0
+	else:
+		player = xs
+		while True:
+			for combo in combos:
+				#if elements of combo are present in ownership: win condition
+				# from here http://stackoverflow.com/questions/1388818/how-can-i-compare-two-lists-in-python-and-return-matches
+				if len(set(combo) & set(player)) == 3:
+					winner = player
+			if player == os:
+				break
+			player = os	
+		if winner == xs:
+			return 1
+		elif winner == os:
+			return 2
+			
 		
 print "Tic-Tac-Toe Program"
 print "To play, take turns playing the coordinates below"
@@ -66,16 +94,23 @@ while turn < 10:
 		currPlayer = "O "
 		
 	doMove = (raw_input(prompt)).upper() # gets a string as an input and converts to upeprcase to match possMoves
-	if doMove in possMoves:
+	if (doMove in possMoves) and (doMove != ""):
 		coordIndex = possMoves.index(doMove)
 		ownership[coordIndex] = currPlayer # get the index of the last move, puts the player as the owner of that space
 		possMoves[coordIndex] = ""
 		printBoard(ownership)
+		winner = checkWin(ownership)
+		print winner # debug
+		if winner == 1:
+			print "x wins!"
+		elif winner == 2:
+			print "o wins!"
 		turn += 1
 		#print possMoves
 		#print possStrings
 	else:
 		print "invalid input/move"
+		printBoard(ownership)
 
 
 
