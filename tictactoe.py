@@ -1,36 +1,6 @@
 
 from random import randrange
 def printBoard(ownerList):
-	print "----------------------------------------" # first line
-	
-	
-	
-	# start working on topRow
-	index = 0
-	
-	
-	
-	while index < 9:
-		left = " " # reset these values to blank and add a space to make blank and filled lines have the same length
-		center = " " 
-		right = " "
-		
-		for x in range(3):
-			print str(index) + " INDEXXX"
-			currEval = ownerList[index] # returns a string that describes the owner: "", "X", or "O"
-			if currEval == "": # if there is no owner
-				index += 1 # then move to the next position's ownership
-			elif currEval != "": # if there is an owner
-				if index == (0 or 3 or 6): # if the left block
-					left = currEval
-				elif index == (1 or 4 or 7): # if center block
-					center = currEval
-				elif index == (2 or 5 or 8): # if right block
-					right = currEval
-				index += 1
-			
-		print "|     %s     |     %s     |     %s     |" % (left,center,right)
-		print "----------------------------------------"
 
 		
 		
@@ -52,16 +22,21 @@ possMoves = ["LT","CT","RT","LC","CC","RC","LB","CB","RB"]
 ownership = ["","","","","","","","",""]
 
 # initial board print -- testing component of printBoard()
-i = 0
+index = 0
 print "----------------------------------------"
-while i < 9:
-		left = "left" # reset these values to blank and add a space to make blank and filled lines have the same length
-		center = "center" 
-		right = "right"
-		
-		i+=3
-		print "|     %s     |     %s     |     %s     |" % (left,center,right)
-		print "----------------------------------------"
+for x in range(3):
+	for x in range(3):
+		if index == 0 or index == 3 or index == 6:
+			left = possMoves[index]
+		elif index == 1 or index == 4 or index == 7:
+			center = possMoves[index]
+		elif index == 2 or index == 5 or index == 8:
+			right = possMoves[index]
+		else:
+			print "wrong"
+		index += 1
+	print "|     %s     |     %s     |     %s     |" % (left,center,right)
+	print "----------------------------------------"
 
 
 #print "|     LT     |     CT     |     RT     |" # 5 spaces
