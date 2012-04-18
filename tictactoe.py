@@ -4,6 +4,8 @@ def printBoard(possStrings):
 	# !!!! make sure possStrings is formatted to correctly use this function
 	# has to be in form which is top row (LT, CT, RT) -> center -> bottom row
 	# print the coordinates of blanks
+	# let's say that possStrings is below with two values
+	# possStrings = ["LT","X","CT","","RT","","LC","O","CC","","RC","","LB","","CB","","RB",""]
 	print "----------------------------------------" # first line
 	
 	# start working on topRow
@@ -24,8 +26,8 @@ def printBoard(possStrings):
 				elif index == (5 or 11 or 17): # if right block
 					right = currEval
 				index += 2
-			print "|     %s     |     %s     |     %s     |" % (left,center,right)		
-	print "----------------------------------------" # last line	
+		print "|     %s     |     %s     |     %s     |" % (left,center,right)
+		print "----------------------------------------"
 
 print "Tic-Tac-Toe Program"
 print "To play, take turns playing the coordinates below"
