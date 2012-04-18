@@ -1,7 +1,21 @@
 
 from random import randrange
-def printBoard(ownerList):
-
+def printBoard(board):
+	index = 0
+	print "----------------------------------------"
+	for x in range(3):
+		for x in range(3):
+			if index == 0 or index == 3 or index == 6:
+				left = board[index]
+			elif index == 1 or index == 4 or index == 7:
+				center = board[index]
+			elif index == 2 or index == 5 or index == 8:
+				right = board[index]
+			else:
+				print "wrong"
+			index += 1
+		print "|     %s     |     %s     |     %s     |" % (left,center,right)
+		print "----------------------------------------"
 		
 		
 		
@@ -19,27 +33,12 @@ print "Tic-Tac-Toe Program"
 print "To play, take turns playing the coordinates below"
 
 possMoves = ["LT","CT","RT","LC","CC","RC","LB","CB","RB"]
-ownership = ["","","","","","","","",""]
+ownership = ["LT","CT","RT","LC","CC","RC","LB","CB","RB"]
 
-# initial board print -- testing component of printBoard()
-index = 0
-print "----------------------------------------"
-for x in range(3):
-	for x in range(3):
-		if index == 0 or index == 3 or index == 6:
-			left = possMoves[index]
-		elif index == 1 or index == 4 or index == 7:
-			center = possMoves[index]
-		elif index == 2 or index == 5 or index == 8:
-			right = possMoves[index]
-		else:
-			print "wrong"
-		index += 1
-	print "|     %s     |     %s     |     %s     |" % (left,center,right)
-	print "----------------------------------------"
+printBoard(possMoves)
 
-
-#print "|     LT     |     CT     |     RT     |" # 5 spaces
+# example board
+#print "|     LT     |     CT     |     RT     |" 
 #print "|     LC     |     CC     |     RC     |"
 #print "|     LB     |     CB     |     RB     |"
 
@@ -64,9 +63,7 @@ while turn < 10:
 	if doMove in possMoves:
 		coordIndex = possMoves.index(doMove)
 		ownership[coordIndex] = currPlayer # get the index of the last move, puts the player as the owner of that space
-		print ownership
 		possMoves[coordIndex] = ""
-		print possMoves
 		printBoard(ownership)
 		turn += 1
 		#print possMoves
