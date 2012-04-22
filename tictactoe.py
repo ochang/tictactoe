@@ -63,7 +63,7 @@ def chooser(playerType,piece,board,turn):
 		if doMove in board: # if valid move...
 			board[board.index(doMove)] = piece # assign current player as the value of coordIndex
 		else:
-			print "invalid input/move. go again, %s" % piece
+			print "invalid input/move. say a coordinate like 'ct'. go again, %s" % piece
 			printBoard(board)
 	elif playerType == "cpu":
 		cpu_player(board,piece,turn)	
@@ -102,9 +102,9 @@ def cpu_player(board,CPUpiece,turn):
 	
 	for combo in combos:
 		if (len(set(cpu) & set(combo)) == 2):
-			#print "CONSIDERING WINNING. POSSIBLE MISSING INDEX:" #db
+			print "CONSIDERING WINNING. POSSIBLE MISSING INDEX:" #db
 			a = (set(combo) - set(cpu))
-			#print a #db
+			print a #db
 			if len(a & set(opponent)) == 0: # if two in mine similar to combo and the third one isn't in opponent
 				#print "cpu two similar" #db
 				# get missing -- MUST BE EMPTY		
@@ -119,16 +119,19 @@ def cpu_player(board,CPUpiece,turn):
 	if moved == False:
 		for combo in combos:
 			if len(set(opponent) & set(combo)) == 2: # if two in opponent -- block
-				#print "opponent 2 simliar" #db
-				missing = list(set(combo) - set(opponent))[0]
-				print "CPU as %splays %s" % (CPUpiece, board[missing])
-				board[missing] = CPUpiece
-				moved = True
-				break
+				print "considering opponent 2 simliar" #db
+				missing = list(set(combo) - set(opponent))[0] # gives a list e.g. [6]
+				print "missing = " + str(missing)
+				if missing not in cpu: # if I don't own missing alraedy
+					print "went for it" #db
+					print "CPU as %splays %s" % (CPUpiece, board[missing])
+					board[missing] = CPUpiece
+					moved = True
+					break
 	
 	if moved == False:
 		if (turn < 2) or (set(corners) & set(board) != 0): # if they are still open
-			#print "corner move" #db
+			print "corner move" #db
 			# get the string of the remaining square in board
 			# pairs in corners that are in board
 			#print "TAKING [0] OF THIS LIST" #db
@@ -137,7 +140,7 @@ def cpu_player(board,CPUpiece,turn):
 			print "CPU as %splays %s" % (CPUpiece, board[board.index(missing)])
 			board[board.index(missing)] = CPUpiece
 		else:
-			#print "naive method" # debug
+			print "naive method" # debug
 			# naive cpu -- chooses a random unasigned square
 			while True:
 				randomInd = board[randrange(0,9)]
@@ -213,7 +216,7 @@ while turn <= 10 and turn > 0: # maximum amount of moves in a tictactoe game is 
 			#print "CPU is " + shuffled[1] #db
 	turn += 1
 		
-
+raw_input("Press any key to exit ")
 
 
 # end of file	
