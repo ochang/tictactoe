@@ -1,7 +1,8 @@
-# add AI
 # add win counter and a easy way to start another game
-# build interface to choose 2 humans or 1 human or 2 cpu
 # migrate stuff to classes. also: figure out if I should to that
+# still possible to win if AI picks wrong corners at start versus a human
+# all cpu vs. cpu games play out exactly the same
+# add prompt to play again after game? (who wants to play that much tictactoe?)
 
 from random import shuffle,randrange
 
@@ -26,12 +27,8 @@ def printBoard(board):
 def checkWin(ownership):
 	""" Given list ownership which is comprised of position strings and ownership strings ('X ' and 'O '), outputs winning piece if there is a winner. """
 	
-	# improvements:
-		# check what happens in a scratch game
-	
 	combos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]] # winning combinations
 	
-	# sort ownership into two lists
 	xs = []
 	os = []
 	
@@ -40,15 +37,9 @@ def checkWin(ownership):
 			xs.append(index)
 		elif item == "O ":
 			os.append(index)
-		else:
-			pass
 	#print xs # debug
 	#print os # debug
-	
-	
-	# if (len(xs) < 3) or (len(os) < 3):
-		# return 0
-	# else:	
+
 	players = [xs,os]
 	for combo in combos:
 		for player in players:
@@ -58,7 +49,7 @@ def checkWin(ownership):
 				elif player == os:
 					return "O"
 				
-def chooser(playerType,piece,board):
+def chooser(playerType,piece,board,turn):
 	printBoard(board)
 	# sets up the correct prompt
 	if piece == "X ":
@@ -75,7 +66,7 @@ def chooser(playerType,piece,board):
 			print "invalid input/move. go again, %s" % piece
 			printBoard(board)
 	elif playerType == "cpu":
-		cpu_player(board,piece)	
+		cpu_player(board,piece,turn)	
 
 def game_type():
 	while True:
@@ -87,19 +78,75 @@ def game_type():
 			break
 	return whosPlaying
 
-def cpu_player(board,piece): # turn, player eventually
-	# start by choosing a random unassigned square and return its index
+def cpu_player(board,CPUpiece,turn):
+	combos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]] # winning combinations
+	cpu = []
+	opponent = []
 	
-	#choose random square
+	for (index, item) in enumerate(board):
+		if item == CPUpiece:
+			cpu.append(index)
+		elif (item == "O " or item == "X ") and (item != CPUpiece):
+			opponent.append(index)
 	
-	while True:
-		x = board[randrange(0,9)]
-		if (x != "X ") and (x != "O "):
-			print "CPU playing %s" % x
-			board[board.index(x)] = piece # assign current player as the value of coordIndex
-			break
+	#print cpu #db
+	#print opponent #db
+	
+	corners = ["LT", "RT", "LB", "RB"]
+	shuffle(corners)
+	# middle = 4
+	# sides = [1, 3, 5, 7]
+	# shuffle(sides)
+	
+	moved = False
+	
+	for combo in combos:
+		if (len(set(cpu) & set(combo)) == 2):
+			#print "CONSIDERING WINNING. POSSIBLE MISSING INDEX:" #db
+			a = (set(combo) - set(cpu))
+			#print a #db
+			if len(a & set(opponent)) == 0: # if two in mine similar to combo and the third one isn't in opponent
+				#print "cpu two similar" #db
+				# get missing -- MUST BE EMPTY		
+				missing = list(set(combo) - set(cpu))[0]
+				print "CPU as %splays %s" % (CPUpiece, board[missing])
+				board[missing] = CPUpiece
+				moved = True
+				break
+	# need to be in 2 for loops or else it will stop when it has the chance to win
+	# if there is the chance to win and the chance to block, it possibly will take the block
+	# this ensures that all the combos are used before going for a block
+	if moved == False:
+		for combo in combos:
+			if len(set(opponent) & set(combo)) == 2: # if two in opponent -- block
+				#print "opponent 2 simliar" #db
+				missing = list(set(combo) - set(opponent))[0]
+				print "CPU as %splays %s" % (CPUpiece, board[missing])
+				board[missing] = CPUpiece
+				moved = True
+				break
+	
+	if moved == False:
+		if (turn < 2) or (set(corners) & set(board) != 0): # if they are still open
+			#print "corner move" #db
+			# get the string of the remaining square in board
+			# pairs in corners that are in board
+			#print "TAKING [0] OF THIS LIST" #db
+			#print list(set(corners) & set(board)) #db
+			missing = list(set(corners) & set(board))[0]
+			print "CPU as %splays %s" % (CPUpiece, board[board.index(missing)])
+			board[board.index(missing)] = CPUpiece
 		else:
-			pass
+			#print "naive method" # debug
+			# naive cpu -- chooses a random unasigned square
+			while True:
+				randomInd = board[randrange(0,9)]
+				if (randomInd != "X ") and (randomInd != "O "):
+					print "CPU as %splays %s" % (CPUpiece, randomInd)
+					board[board.index(randomInd)] = CPUpiece
+					break
+	else:
+		pass
 
 def print_players(gametype,shuffled):
 	print "\n"
@@ -118,7 +165,7 @@ def print_players(gametype,shuffled):
 turn = 1
 board = ["LT","CT","RT","LC","CC","RC","LB","CB","RB"]
 shuffled = ["X ", "O "]
-shuffle(shuffled)
+shuffle(shuffled) 
 
 print "Tic-Tac-Toe Program"	
 gametype = game_type() # returns String 1,2,c
@@ -130,12 +177,17 @@ while turn <= 10 and turn > 0: # maximum amount of moves in a tictactoe game is 
 		winner = checkWin(board)
 		if winner == "X":
 			print "X Wins!"
+			print "vvvvv WINNING BOARD vvvvv"
+			printBoard(board)
 			break
 		elif winner == "O":
 			print "O Wins!"
+			print "vvvvv WINNING BOARD vvvvv"
+			printBoard(board)
 			break
 		elif winner == "scratch" or turn == 10:
 			print "no possible winning combination"
+			printBoard(board)
 			break
 		else:
 			pass
@@ -143,19 +195,22 @@ while turn <= 10 and turn > 0: # maximum amount of moves in a tictactoe game is 
 	print "\n\nMove #%i" % turn	
 	if gametype == "2":
 		if (turn % 2 == 1): # if turn is even...
-			chooser("human",shuffled[0],board)
+			chooser("human",shuffled[0],board,turn)
 		else: # if turn is odd...
-			chooser("human",shuffled[1],board)
+			chooser("human",shuffled[1],board,turn)
 	elif gametype == "1":
 		if (turn % 2 == 1): # if turn is even...
-			chooser("human",shuffled[0],board)
+			chooser("human",shuffled[0],board,turn)
 		else: # if turn is odd...
-			chooser("cpu",shuffled[1],board)
+			chooser("cpu",shuffled[1],board,turn)
+			#print "CPU is " + shuffled[1] #db
 	elif gametype == "c":
 		if (turn % 2 == 1): # if turn is even...
-			chooser("cpu",shuffled[0],board)
+			chooser("cpu",shuffled[0],board,turn)
+			#print "CPU is " + shuffled[0] #db
 		else: # if turn is odd...
-			chooser("cpu",shuffled[1],board)	
+			chooser("cpu",shuffled[1],board,turn)
+			#print "CPU is " + shuffled[1] #db
 	turn += 1
 		
 
