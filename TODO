@@ -1,0 +1,9 @@
+# still possible to win if AI picks wrong corners at start versus a human
+    - still an issue?
+add prompt to play again after game? (who wants to play that much tictactoe?)
+use PEP8 naming conventions esp. no camel caps and 80 chars
+use numbers to refer to the tiles
+have detection for no win
+clear screen after each game
+have a running score count
+use more idioms, man

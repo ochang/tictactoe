@@ -1,9 +1,3 @@
-# add win counter and a easy way to start another game
-# migrate stuff to classes. also: figure out if I should to that
-# still possible to win if AI picks wrong corners at start versus a human
-# all cpu vs. cpu games play out exactly the same
-# add prompt to play again after game? (who wants to play that much tictactoe?)
-
 from random import shuffle,randrange
 
 def printBoard(board):
