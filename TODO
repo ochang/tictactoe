@@ -7,3 +7,6 @@ have detection for no win
 clear screen after each game
 have a running score count
 use more idioms, man
+
+implement top of print_view
+printing works weird -- chars take up twice as much space
