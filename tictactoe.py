@@ -11,6 +11,27 @@ def clear_screen():
     else:
         system("clear")
 
+def setup_players():
+    """
+    sets up which game mode (1 play, 2 play, cpu vs cpu) and pieces
+    returns a tuple with (str, str, str)
+    """
+    # first, figure out who has to play
+    while True:
+        answers = ("1", "2", "c")
+        who = raw_input("players: [1] human, [2] humans, [c]pu only ").lower()
+        if who not in answers:
+            print "invalid choice. choose the value inside the brackets"
+        else:
+            break
+            # we now have a string "1", "2", "c"
+
+    # then, figure out who is X and O
+    pieces = ["X", "O"]
+    shuffle(pieces)
+
+    return (who, pieces[0], pieces[1])
+
 def print_board(board):
     """ 
     Prints an ASCII art representation of a tictactoe grid. Assumed that 'board' is given in a list fomat that goes down the first row's colums and then proceeds to second row i.e. [first row cells, second row cells, third row cells]. 
@@ -202,27 +223,6 @@ def cpu_player(board, piece, turn):
         elif prompt == "N":
             raise SystemExit(0)
 
-def setup_players():
-    """
-    sets up which game mode (1 play, 2 play, cpu vs cpu) and pieces
-    returns a tuple with (str, str, str)
-    """
-    # first, figure out who has to play
-    while True:
-        answers = ("1", "2", "c")
-        who = raw_input("players: [1] human, [2] humans, [c]pu only ").lower()
-        if who not in answers:
-            print "invalid choice. choose the value inside the brackets"
-        else:
-            break
-            # we now have a string "1", "2", "c"
-
-    # then, figure out who is X and O
-    pieces = ["X", "O"]
-    shuffle(pieces)
-
-    return (who, pieces[0], pieces[1])
-
 
 if __name__ == "__main__":
     # setup
@@ -246,6 +246,7 @@ if __name__ == "__main__":
         id_info = cell_chooser(game_info, board, turn)
 
         # when all cells have been filled
+        # if we've reached this point we haven't broken out and are losers
         if turn == 9:
             print "Everyone's a loser!"
 
