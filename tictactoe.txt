@@ -1,8 +1,0 @@
-LT CT RT
-LC CC RC
-LB CB RB
-
-# example board
-|     LT 0     |     CT 1     |     RT 2     |
-|     LC 3     |     CC 4     |     RC 5     |
-|     LB 6     |     CB 7     |     RB 8     |

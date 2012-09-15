@@ -119,7 +119,7 @@ def cell_chooser(info, board, turn):
                 # assign current player as the value
                 # not always guaranteed to work if not an int
                 board[int(chosen_cell) - 1] = piece
-                clear_screen()
+                if turn != 9: clear_screen()
                 break
             else:
                 print "invalid input/move. say a coordinate e.g. 0"
@@ -135,7 +135,9 @@ def cpu_player(board, piece, turn):
     return None
     """
     # winning combinations
-    combos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
+    combos = [[0,1,2],[3,4,5],[6,7,8], # horizontals
+              [0,3,6],[1,4,7],[2,5,8], # verticals
+              [0,4,8],[2,4,6]]         # diagonals
     corners = ["1", "3", "7", "9"]
     shuffle(corners)
     cpu = []
@@ -159,42 +161,46 @@ def cpu_player(board, piece, turn):
             #  and the third one isn't owned by opponent...
             if len((set(combo) - set(cpu)) & set(opponent)) == 0:    
                 missing = list(set(combo) - set(cpu))[0]
-                print "In an attempt to win... "# db!!!
+                # print "In an attempt to win... "# db!!!
                 print "CPU as %s plays %s" % (piece, board[missing])
                 board[missing] = piece
                 return None
-    # vvvvv don't really understand why this is vvvvv
-    # need to be in 2 for loops or else it will stop when it has the chance to win. if there is the chance to win and the chance to block, it possibly will take the block. this ensures that all the combos are used before going for a block
 
     # detect chance to block: if opponent has two of a winning combo
     for combo in combos:
         if len(set(opponent) & set(combo)) == 2:
             # gives a list e.g. [6]
             missing = list(set(combo) - set(opponent))[0] 
-            print "index of cell opponent is missing = " + str(missing)
+            # print "index of cell opponent is missing = " + str(missing)
             # if I don't own missing already, block
             if missing not in cpu:
-                print "To block..."
+                # print "To block..."
                 print "CPU as %s plays %s" % (piece, board[missing])
                 board[missing] = piece
                 return None
 
     # if turn less than 2 or corners still open...
-    if (turn < 2) or (set(corners) & set(board) != 0):
+    if (turn < 2) or (len(set(corners) & set(board)) != 0):
         # pick an untaken corner cell
         missing = list(set(corners) & set(board))[0]
-        print "CPU loves corners and so..."
+        # print "CPU loves corners and so..."
         print "CPU as %s plays %s" % (piece, board[board.index(missing)])
         board[board.index(missing)] = piece
+        return None
     # naive cpu -- chooses a random unasigned square
-    else: 
-        while True:
-            randomInd = board[randrange(0,9)]
-            if (randomInd != "X") and (randomInd != "O"):
-                print "In an act of desparation..."
-                print "CPU as %s plays %s" % (piece, randomInd)
-                board[board.index(randomInd)] = piece
-                return
+    # should only happen if no other winning conditions
+    else:
+        prompt = raw_input("No win possible. Keep playing? [y/N] ").upper()
+        if prompt == "Y":
+            while True:
+                rand_cell = board[randrange(0,9)]
+                if (rand_cell != "X") and (rand_cell != "O"):
+                    # print "In an act of desparation..."
+                    print "CPU as %s plays %s" % (piece, rand_cell)
+                    board[board.index(rand_cell)] = piece
+                    return None
+        elif prompt == "N":
+            raise SystemExit(0)
 
 def setup_players():
     """
@@ -231,7 +237,7 @@ if __name__ == "__main__":
     clear_screen()
 
     # maximum amount of moves in a tictactoe game is 9
-    while turn <= 9 and turn >= 1:
+    while turn >= 1 and turn <= 9:
         print_view(game_info, board, turn)
 
         if check_win(board, turn, id_info):
@@ -239,8 +245,11 @@ if __name__ == "__main__":
 
         id_info = cell_chooser(game_info, board, turn)
 
-        turn += 1
+        # when all cells have been filled
+        if turn == 9:
+            print "Everyone's a loser!"
 
+        turn += 1
 
     raise SystemExit(0)
 
