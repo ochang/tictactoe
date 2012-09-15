@@ -231,7 +231,7 @@ if __name__ == "__main__":
     clear_screen()
 
     # maximum amount of moves in a tictactoe game is 9
-    while turn <= 10 and turn >= 1:
+    while turn <= 9 and turn >= 1:
         print_view(game_info, board, turn)
 
         if check_win(board, turn, id_info):

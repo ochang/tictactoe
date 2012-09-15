@@ -4,7 +4,25 @@ fix errors with cpu player vs cpu player
 also fix cpu player vs human
     still taking squares it can't take
 
-change representation of pieces to be "X" instead of "X "
 
-print missing
-make sure "mising" is the corect value
+just played cell 9
+Move #8 -- Player 1 is X, CPU 1 is O
+-------------------------------------
+|     O     |     2     |     X     |
+-------------------------------------
+|     X     |     X     |     O     |
+-------------------------------------
+|     O     |     8     |     X     |
+-------------------------------------
+index of cell opponent is missing = 5
+index of cell opponent is missing = 5
+index of cell opponent is missing = 0
+index of cell opponent is missing = 6
+Traceback (most recent call last):
+  File "D:\Documents\### python\tictactoe\tictactoe.py", line 244, in <module>
+    id_info = cell_chooser(game_info, board, turn)
+  File "D:\Documents\### python\tictactoe\tictactoe.py", line 107, in cell_chooser
+    cpu_player(board, player2_piece, turn)
+  File "D:\Documents\### python\tictactoe\tictactoe.py", line 189, in cpu_player
+    missing = list(set(corners) & set(board))[0]
+IndexError: list index out of range
