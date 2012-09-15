@@ -9,31 +9,30 @@ def print_board(board):
     print "-------------------------------------"
     for x in range(3): # for every row...
         for x in range(3): # for every column (left, center, right)...
+            # the zero at the end is so we only take one char
+            # avoids issues with printing board with whitespace
             if i in (0, 3, 6):
-                left = board[i]
+                left = board[i][0]
             elif i in (1, 4, 7):
-                center = board[i]
+                center = board[i][0]
             elif i in (2, 5, 8):
-                right = board[i]
+                right = board[i][0]
             else:
                 print "unexpected index"
             i += 1 # incerement so next pass is for the next cell
-        print "|     %s     |     %s     |     %s     |" % (left,center,right)
+        
+        print "|     " + left + "     |     " + center + "     |     " + right + "     |"
         print "-------------------------------------"
 
-def print_view(turn, board):
-    # if who == "2": # two humans
-    #     print "Player 1 is %s" % pieces[0]
-    #     print "Player 2 is %s" % pieces[1]
-    # elif who == "1": # one human, one CPU; computer is always second
-    #     print "Player 1 is %s" % pieces[0]
-    #     print "CPU 1 is %s" % pieces[1]
-    # elif who == "c":
-    #     print "CPU 1 is %s" % pieces[0]
-    #     print "CPU 2 is %s" % pieces[1]
+def print_view(turn, board, info):
+    # print top status bar
+    if info[0] == "2": # two humans
+        print "Move #%i -- Player 1 is %s, Player 2 is %s" % (turn, info[1], info[2])
+    elif info[0] == "1": # one human, one CPU; computer is always second
+        print "Move #%i -- Player 1 is %s, CPU 1 is %s" % (turn, info[1], info[2])
+    elif info[0] == "c":
+        print "Move #%i -- CPU 1 is %s, CPU 2 is %s" % (turn, info[1], info[2])
 
-    # system('cls') # clear screen -- windows only!
-    print "Move #%i -- " % turn
     print_board(board)
                 
 def check_win(turn, ownership):
@@ -79,37 +78,36 @@ def cell_chooser(player_type, piece, board, turn):
     returns nothing
     """
     if player_type == "human":
-        chosen_cell = raw_input("%s's turn: " % piece)
-        if chosen_cell in board: # if valid move...
-            # assign current player as the value
-            # not always guaranteed to work if not an int
-            board[int(chosen_cell)] = piece 
-        else:
-            print "invalid input/move. say a coordinate e.g. 0"
-            print_board(board)
+        while True:
+            chosen_cell = raw_input("%s's turn: " % piece)
+            if (chosen_cell in board): # if valid move...
+                # assign current player as the value
+                # not always guaranteed to work if not an int
+                board[int(chosen_cell) - 1] = piece
+                break
+            else:
+                print "invalid input/move. say a coordinate e.g. 0"
+                print_board(board)
 
     else:
         cpu_player(board, piece, turn)    
 
-def cpu_player(board,CPUpiece,turn):
-    combos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]] # winning combinations
+def cpu_player(board, piece, turn):
+    # winning combinations
+    combos = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
+    corners = ["1", "3", "7", "9"]
+    shuffle(corners)
     cpu = []
     opponent = []
     
     for (index, item) in enumerate(board):
-        if item == CPUpiece:
+        if item == piece:
             cpu.append(index)
-        elif (item == "O " or item == "X ") and (item != CPUpiece):
+        elif (item == "O" or item == "X") and (item != piece):
             opponent.append(index)
     
     #print cpu #db
     #print opponent #db
-    
-    corners = ["LT", "RT", "LB", "RB"]
-    shuffle(corners)
-    # middle = 4
-    # sides = [1, 3, 5, 7]
-    # shuffle(sides)
     
     moved = False
     
@@ -122,8 +120,8 @@ def cpu_player(board,CPUpiece,turn):
                 #print "cpu two similar" #db
                 # get missing -- MUST BE EMPTY      
                 missing = list(set(combo) - set(cpu))[0]
-                print "CPU as %splays %s" % (CPUpiece, board[missing])
-                board[missing] = CPUpiece
+                print "CPU as %s plays %s" % (piece, board[missing])
+                board[missing] = piece
                 moved = True
                 break
     # need to be in 2 for loops or else it will stop when it has the chance to win
@@ -137,12 +135,11 @@ def cpu_player(board,CPUpiece,turn):
                 print "missing = " + str(missing)
                 if missing not in cpu: # if I don't own missing alraedy
                     #print "went for it" #db
-                    print "CPU as %splays %s" % (CPUpiece, board[missing])
-                    board[missing] = CPUpiece
+                    print "CPU as %s plays %s" % (piece, board[missing])
+                    board[missing] = piece
                     moved = True
                     break
     
-    if moved == False:
         if (turn < 2) or (set(corners) & set(board) != 0): # if they are still open
             #print "corner move" #db
             # get the string of the remaining square in board
@@ -150,19 +147,17 @@ def cpu_player(board,CPUpiece,turn):
             #print "TAKING [0] OF THIS LIST" #db
             #print list(set(corners) & set(board)) #db
             missing = list(set(corners) & set(board))[0]
-            print "CPU as %splays %s" % (CPUpiece, board[board.index(missing)])
-            board[board.index(missing)] = CPUpiece
+            print "CPU as %s plays %s" % (piece, board[board.index(missing)])
+            board[board.index(missing)] = piece
         else:
             #print "naive method" # debug
             # naive cpu -- chooses a random unasigned square
             while True:
                 randomInd = board[randrange(0,9)]
-                if (randomInd != "X ") and (randomInd != "O "):
-                    print "CPU as %splays %s" % (CPUpiece, randomInd)
-                    board[board.index(randomInd)] = CPUpiece
+                if (randomInd != "X") and (randomInd != "O"):
+                    print "CPU as %s plays %s" % (piece, randomInd)
+                    board[board.index(randomInd)] = piece
                     break
-    else:
-        pass
 
 def setup_players():
     """
@@ -171,7 +166,7 @@ def setup_players():
     """
     # first, figure out who has to play
     while True:
-        answers = ("1","2","c")
+        answers = ("1", "2", "c")
         who = raw_input("players: [1] human, [2] humans, [c]pu only ").lower()
         if who not in answers:
             print "invalid choice. choose the value inside the brackets"
@@ -180,7 +175,7 @@ def setup_players():
             # we now have a string "1", "2", "c"
 
     # then, figure out who is X and O
-    pieces = ["X ", "O "]
+    pieces = ["X", "O"]
     shuffle(pieces)
 
     return (who, pieces[0], pieces[1])
@@ -189,37 +184,42 @@ def setup_players():
 if __name__ == "__main__":
     # setup
     turn = 1
-    # board = ["LT","CT","RT","LC","CC","RC","LB","CB","RB"]
-    board = ["0", "1", "2", "3", "4", "5", "6", "7", "8"]
+    board = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
     system("cls")
     print "Tic-Tac-Toe Program\n"
-    gametype, player1, player2 = setup_players()
-    
+    # split into two steps so that we can easily pass all this info to print
+    game_info = setup_players()
+    system('cls')
+    gametype, player1, player2 = game_info
     # maximum amount of moves in a tictactoe game is 9
     while turn <= 10 and turn >= 1: 
         if check_win(turn, board):
             break
             
-        print_view(turn, board)
-        # break
-
+        print_view(turn, board, game_info)
 
         if gametype == "2":
-            if (turn % 2 == 1): # if turn is even...
+             # if turn is even...
+            if (turn % 2 == 1):
                 cell_chooser("human", player1, board, turn)
-            else: # if turn is odd...
+                system('cls') # clear screen -- windows only!
+            # else if turn is odd...
+            else: 
                 cell_chooser("human", player2, board, turn)
+                system('cls') # clear screen -- windows only!
         elif gametype == "1":
-            if (turn % 2 == 1): # if turn is even...
+            if (turn % 2 == 1):
                 cell_chooser("human", player1, board, turn)
-            else: # if turn is odd...
+                system('cls') # clear screen -- windows only!
+            else:
                 cell_chooser("cpu", player2, board, turn)
         elif gametype == "c":
-            if (turn % 2 == 1): # if turn is even...
+            if (turn % 2 == 1):
                 cell_chooser("cpu", player1, board, turn)
-            else: # if turn is odd...
+            else:
                 cell_chooser("cpu", player2, board, turn)
+
         turn += 1
 
 

@@ -1,12 +1,6 @@
-# still possible to win if AI picks wrong corners at start versus a human
-    - still an issue?
-add prompt to play again after game? (who wants to play that much tictactoe?)
-use PEP8 naming conventions esp. no camel caps and 80 chars
-use numbers to refer to the tiles
 have detection for no win
-clear screen after each game
-have a running score count
-use more idioms, man
+fix errors with cpu player vs cpu player
+also fix cpu player vs human
+    still taking squares it can't take
 
-implement top of print_view
-printing works weird -- chars take up twice as much space
+change representation of pieces to be "X" instead of "X "
