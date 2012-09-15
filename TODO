@@ -1,6 +1,10 @@
-have detection for no win
+have detection for scratch games
 fix errors with cpu player vs cpu player
+    all cpu vs cpu games play exactly the same
 also fix cpu player vs human
     still taking squares it can't take
 
 change representation of pieces to be "X" instead of "X "
+
+print missing
+make sure "mising" is the corect value
