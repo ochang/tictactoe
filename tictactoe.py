@@ -34,7 +34,10 @@ def setup_players():
 
 def print_board(board):
     """ 
-    Prints an ASCII art representation of a tictactoe grid. Assumed that 'board' is given in a list fomat that goes down the first row's colums and then proceeds to second row i.e. [first row cells, second row cells, third row cells]. 
+    Prints an ASCII art representation of a tictactoe grid. Assumed that 
+    'board' is given in a list fomat that goes down the first row's colums 
+    and then proceeds to second row i.e. [first row cells, second row cells, 
+    third row cells]. 
     """
     i = 0
     print "-------------------------------------"
