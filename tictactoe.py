@@ -68,8 +68,9 @@ def print_view(board, info, turn):
                 
 def check_endgame_conditions(board, turn, names):
     """ 
-    Given list ownership which is comprised of position strings and ownership strings ('X' and 'O'), outputs winning piece if there is a winner. 
-    Return true(winner)
+    Takes list of board status, int turn, list of last player's name and piece
+    Return True if there is a winner, False if there is still potential winner
+    Ends script if there can be no winner
     """
     # have to play 5 rounds before a winner can occur
     if turn <= 5:
@@ -269,7 +270,6 @@ if __name__ == "__main__":
 
     clear_screen()
     print "Tic-Tac-Toe Program\n"
-    # split into two steps so that we can easily pass all this info to print
     game_info = setup_players()
     clear_screen()
 
