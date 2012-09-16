@@ -1,6 +1,3 @@
-have detection for scratch games -- half done
 fix errors with cpu player vs cpu player
     all cpu vs cpu games play exactly the same
-comment out cpu strategy strings when done
-(piece, board[missing]) versus (piece, board[board.index(missing)]) ???
-player can still win
+player can still win when there's two moves that CPU has to block

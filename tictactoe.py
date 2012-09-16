@@ -86,9 +86,8 @@ def check_win(board, turn, names):
         elif item == "O":
             os.append(index)
 
-    players = (xs, os)
     for combo in combos:
-        for player in players:
+        for player in (xs, os):
             # from http://stackoverflow.com/questions/1388818/how-can-i-compare-two-lists-in-python-and-return-matches
             if len(set(player) & set(combo)) == 3: 
                 if player == xs:
@@ -102,7 +101,7 @@ def cell_chooser(info, board, turn):
     """
     if human, this is easy; we just change value of cell to the player
     elif robot, give to another func
-    returns nothing
+    returns (name of player, piece of player)
     """
     gametype, player1_piece, player2_piece = game_info
 
@@ -156,9 +155,9 @@ def cpu_player(board, piece, turn):
     return None
     """
     # winning combinations
-    combos = [[0,1,2],[3,4,5],[6,7,8], # horizontals
-              [0,3,6],[1,4,7],[2,5,8], # verticals
-              [0,4,8],[2,4,6]]         # diagonals
+    combos = ((0,1,2),(3,4,5),(6,7,8), # horizontals
+              (0,3,6),(1,4,7),(2,5,8), # verticals
+              (0,4,8),(2,4,6))         # diagonals
     corners = ["1", "3", "7", "9"]
     shuffle(corners)
     cpu = []
@@ -174,7 +173,7 @@ def cpu_player(board, piece, turn):
     #print opponent #db
     
     moved = False
-    
+
     # detect chance for win
     for combo in combos:
         # if two in what cpu has and two of a winning solution match...
@@ -208,24 +207,66 @@ def cpu_player(board, piece, turn):
         print "CPU as %s plays %s" % (piece, board[board.index(missing)])
         board[board.index(missing)] = piece
         return None
+
     # naive cpu -- chooses a random unasigned square
     # should only happen if no other winning conditions
     else:
-        prompt = raw_input("No win possible. Keep playing? [y/N] ").upper()
-        if prompt == "Y":
-            while True:
-                rand_cell = board[randrange(0,9)]
-                if (rand_cell != "X") and (rand_cell != "O"):
-                    # print "In an act of desparation..."
-                    print "CPU as %s plays %s" % (piece, rand_cell)
-                    board[board.index(rand_cell)] = piece
-                    return None
-        elif prompt == "N":
-            raise SystemExit(0)
+        while True:
+            rand_cell = board[randrange(0,9)]
+            if (rand_cell != "X") and (rand_cell != "O"):
+                # print "In an act of desparation..."
+                print "CPU as %s plays %s" % (piece, rand_cell)
+                board[board.index(rand_cell)] = piece
+                return None
+
+def check_scratch(board, piece, turn):
+    """
+    return T/F
+    """
+    # winning combinations
+    combos = ((0,1,2),(3,4,5),(6,7,8), # horizontals
+              (0,3,6),(1,4,7),(2,5,8), # verticals
+              (0,4,8),(2,4,6))         # diagonals
+
+    possible_winning_combos = 0
+    x_list = []
+    o_list = []
+    for (index, item) in enumerate(board):
+        if item == "X":
+            x_list.append(index)
+        elif item == "O":
+            o_list.append(index)
+
+    for combo in combos:
+        # each cell can only be owned by one person, allows us to say
+        # how many of the cells in combo o owns
+        o_owns = len(set(x_list) & set(combo))
+        # how many of the cells in combo x owns
+        x_owns = len(set(o_list) & set(combo))
+
+        # print combo, o_owns, x_owns # db!!! looks kind of cool
+
+        # if nobody owns all of that combo, move on
+        if ((o_owns + x_owns) == 3) or ((o_owns == 1) and (x_owns == 1)):
+            # combo can't be won off of
+            pass
+        elif (turn > 8) and (o_owns == 2) and (piece == "X"):
+            pass
+        elif (turn > 8) and (x_owns == 2) and (piece == "O"):
+            pass
+        else:
+            possible_winning_combos += 1
+
+    if possible_winning_combos > 0: # still hope for win
+        return False
+    else: # cat game
+        return True
+        
 
 
 if __name__ == "__main__":
     # setup
+    is_stubborn = False
     id_info = ("", "")
     turn = 1
     board = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -242,6 +283,15 @@ if __name__ == "__main__":
 
         if check_win(board, turn, id_info):
             break
+
+        if check_scratch(board, id_info[1], turn):
+            if not is_stubborn:
+                prompt = raw_input("No win possible. Keep playing? [y/N] ").upper()
+                if prompt == "N":
+                    raise SystemExit(0)
+                else:
+                    is_stubborn = True
+
 
         id_info = cell_chooser(game_info, board, turn)
 
