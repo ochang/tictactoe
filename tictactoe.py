@@ -55,7 +55,7 @@ def print_board(board):
         print "|     " + left + "     |     " + center + "     |     " + right + "     |"
         print "-------------------------------------"
 
-def print_view(info, board, turn):
+def print_view(board, info, turn):
     # print top status bar
     if info[0] == "2": # two humans
         print "Move #%i -- Player 1 is %s, Player 2 is %s" % (turn, info[1], info[2])
@@ -66,38 +66,76 @@ def print_view(info, board, turn):
 
     print_board(board)
                 
-def check_win(board, turn, names):
+def check_endgame_conditions(board, turn, names):
     """ 
     Given list ownership which is comprised of position strings and ownership strings ('X' and 'O'), outputs winning piece if there is a winner. 
-    Return true(winner) or false
+    Return true(winner)
     """
-    # winning combinations -- refer to cells by their indices
-    combos = ((0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6))
-    xs = []
-    os = []
     # have to play 5 rounds before a winner can occur
     if turn <= 5:
         return False
-  
-    # generate list of who owns which square
+
+
+    # winning combinations
+    combos = ((0,1,2),(3,4,5),(6,7,8), # horizontals
+              (0,3,6),(1,4,7),(2,5,8), # verticals
+              (0,4,8),(2,4,6))         # diagonals
+    possible_winning_combos = 0
+    piece = names[1]
+    x_list = []
+    o_list = []
+
     for (index, item) in enumerate(board):
         if item == "X":
-            xs.append(index)
+            x_list.append(index)
         elif item == "O":
-            os.append(index)
+            o_list.append(index)
 
+
+
+    # test for winning-ness
     for combo in combos:
-        for player in (xs, os):
+        for list_ in (x_list, o_list):
             # from http://stackoverflow.com/questions/1388818/how-can-i-compare-two-lists-in-python-and-return-matches
-            if len(set(player) & set(combo)) == 3: 
-                if player == xs:
+            if len(set(list_) & set(combo)) == 3: 
+                if list_ == x_list:
                     print names[0] + " as " + names[1] + " wins!"
                     return True
-                elif player == os:
+                elif list_ == o_list:
                     print names[0] + " as " + names[1] + " wins!"
                     return True
+
+
+
+    # test for catiness/scratchiness
+    for combo in combos:
+        # each cell can only be owned by one person, allows us to say
+        # how many of the cells in combo o owns
+        o_owns = len(set(x_list) & set(combo))
+        # how many of the cells in combo x owns
+        x_owns = len(set(o_list) & set(combo))
+
+        # print combo, o_owns, x_owns # db!!! looks kind of cool
+
+        # if nobody owns all of that combo, move on
+        if ((o_owns + x_owns) == 3) or ((o_owns == 1) and (x_owns == 1)):
+            # combo can't be won off of
+            pass
+        elif (turn > 8) and (o_owns == 2) and (piece == "X"):
+            pass
+        elif (turn > 8) and (x_owns == 2) and (piece == "O"):
+            pass
+        else:
+            possible_winning_combos += 1
+
+    if possible_winning_combos == 0:
+        print "Cat's game! Everyone's a loser!"
+        raise SystemExit(0)
+
+
+    return False
                 
-def cell_chooser(info, board, turn):
+def cell_chooser(board, info, turn):
     """
     if human, this is easy; we just change value of cell to the player
     elif robot, give to another func
@@ -219,49 +257,7 @@ def cpu_player(board, piece, turn):
                 board[board.index(rand_cell)] = piece
                 return None
 
-def check_scratch(board, piece, turn):
-    """
-    return T/F
-    """
-    # winning combinations
-    combos = ((0,1,2),(3,4,5),(6,7,8), # horizontals
-              (0,3,6),(1,4,7),(2,5,8), # verticals
-              (0,4,8),(2,4,6))         # diagonals
 
-    possible_winning_combos = 0
-    x_list = []
-    o_list = []
-    for (index, item) in enumerate(board):
-        if item == "X":
-            x_list.append(index)
-        elif item == "O":
-            o_list.append(index)
-
-    for combo in combos:
-        # each cell can only be owned by one person, allows us to say
-        # how many of the cells in combo o owns
-        o_owns = len(set(x_list) & set(combo))
-        # how many of the cells in combo x owns
-        x_owns = len(set(o_list) & set(combo))
-
-        # print combo, o_owns, x_owns # db!!! looks kind of cool
-
-        # if nobody owns all of that combo, move on
-        if ((o_owns + x_owns) == 3) or ((o_owns == 1) and (x_owns == 1)):
-            # combo can't be won off of
-            pass
-        elif (turn > 8) and (o_owns == 2) and (piece == "X"):
-            pass
-        elif (turn > 8) and (x_owns == 2) and (piece == "O"):
-            pass
-        else:
-            possible_winning_combos += 1
-
-    if possible_winning_combos > 0: # still hope for win
-        return False
-    else: # cat game
-        return True
-        
 
 
 if __name__ == "__main__":
@@ -279,21 +275,12 @@ if __name__ == "__main__":
 
     # maximum amount of moves in a tictactoe game is 9
     while turn >= 1 and turn <= 9:
-        print_view(game_info, board, turn)
+        print_view(board, game_info, turn)
 
-        if check_win(board, turn, id_info):
+        if check_endgame_conditions(board, turn, id_info):
             break
 
-        if check_scratch(board, id_info[1], turn):
-            if not is_stubborn:
-                prompt = raw_input("No win possible. Keep playing? [y/N] ").upper()
-                if prompt == "N":
-                    raise SystemExit(0)
-                else:
-                    is_stubborn = True
-
-
-        id_info = cell_chooser(game_info, board, turn)
+        id_info = cell_chooser(board, game_info, turn)
 
         # when all cells have been filled
         # if we've reached this point we haven't broken out and are losers
