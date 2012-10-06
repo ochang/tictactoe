@@ -1,21 +1,28 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from os import system, name
 from random import shuffle, randrange
 
+
 def clear_screen():
-    """ 
-    support for clearing screens on multi-platforms
-    http://stackoverflow.com/questions/517970/how-to-clear-python-interpreter-console
+    """ support for clearing screens on multiple platforms
+    http://stackoverflow.com/questions/517970/ \
+    how-to-clear-python-interpreter-console
     """
+
     if name == "nt":
         system("cls")
     else:
         system("clear")
+
 
 def setup_players():
     """
     sets up which game mode (1 play, 2 play, cpu vs cpu) and pieces
     returns a tuple with (str, str, str)
     """
+
     # first, figure out who has to play
     while True:
         answers = ("1", "2", "c")
@@ -32,17 +39,18 @@ def setup_players():
 
     return (who, pieces[0], pieces[1])
 
+
 def print_board(board):
-    """ 
-    Prints an ASCII art representation of a tictactoe grid. Assumed that 
-    'board' is given in a list fomat that goes down the first row's colums 
-    and then proceeds to second row i.e. [first row cells, second row cells, 
-    third row cells]. 
+    """  Prints an ASCII art representation of a tictactoe grid. Assumed that
+    'board' is given in a list fomat that goes down the first row's colums
+    and then proceeds to second row i.e. [first row cells, second row cells,
+    third row cells].
     """
+
     i = 0
     print "-------------------------------------"
-    for x in range(3): # for every row...
-        for x in range(3): # for every column (left, center, right)...
+    for x in range(3):  # for every row...
+        for x in range(3):  # for every column (left, center, right)...
             # the zero at the end is so we only take one char
             # avoids issues with printing board with whitespace
             if i in (0, 3, 6):
@@ -53,37 +61,50 @@ def print_board(board):
                 right = board[i][0]
             else:
                 print "unexpected index"
-            i += 1 # incerement so next pass is for the next cell
-        
-        print "|     " + left + "     |     " + center + "     |     " + right + "     |"
+            i += 1  # incerement so next pass is for the next cell
+
+        print "|     " + left + \
+              "     |     " + center + "     |     " +  \
+              right + "     |"
         print "-------------------------------------"
 
+
 def print_view(board, info, turn):
-    # print top status bar
-    if info[0] == "2": # two humans
-        print "Move #%i -- Player 1 is %s, Player 2 is %s" % (turn, info[1], info[2])
-    elif info[0] == "1": # one human, one CPU; computer is always second
-        print "Move #%i -- Player 1 is %s, CPU 1 is %s" % (turn, info[1], info[2])
+    """ print top status bar
+    """
+
+    # two humans
+    if info[0] == "2":
+        print "Move #%i -- Player 1 is %s, Player 2 is %s" % \
+            (turn, info[1], info[2])
+
+    # one human, one CPU; computer is always second
+    elif info[0] == "1":
+        print "Move #%i -- Player 1 is %s, CPU 1 is %s" % \
+            (turn, info[1], info[2])
+
     elif info[0] == "c":
-        print "Move #%i -- CPU 1 is %s, CPU 2 is %s" % (turn, info[1], info[2])
+        print "Move #%i -- CPU 1 is %s, CPU 2 is %s" % \
+            (turn, info[1], info[2])
 
     print_board(board)
-                
+
+
 def check_endgame_conditions(board, turn, names):
-    """ 
-    Takes list of board status, int turn, list of last player's name and piece
-    Return True if there is a winner, False if there is still potential winner
-    Ends script if there can be no winner
+    """ Takes list of board, int turn, list of last name and piece. Returns...
+        -- True if there is a winner
+        -- False if there is still potential winner
+        -- Ends script if there can be no winner
     """
+
     # have to play 5 rounds before a winner can occur
     if turn <= 5:
         return False
 
-
     # winning combinations
-    combos = ((0,1,2),(3,4,5),(6,7,8), # horizontals
-              (0,3,6),(1,4,7),(2,5,8), # verticals
-              (0,4,8),(2,4,6))         # diagonals
+    combos = ((0, 1, 2), (3, 4, 5), (6, 7, 8),  # horizontals
+              (0, 3, 6), (1, 4, 7), (2, 5, 8),  # verticals
+              (0, 4, 8), (2, 4, 6))             # diagonals
     possible_winning_combos = 0
     piece = names[1]
     x_list = []
@@ -95,21 +116,18 @@ def check_endgame_conditions(board, turn, names):
         elif item == "O":
             o_list.append(index)
 
-
-
     # test for winning-ness
     for combo in combos:
         for list_ in (x_list, o_list):
-            # from http://stackoverflow.com/questions/1388818/how-can-i-compare-two-lists-in-python-and-return-matches
-            if len(set(list_) & set(combo)) == 3: 
+            # from http://stackoverflow.com/questions/1388818/
+            # how-can-i-compare-two-lists-in-python-and-return-matches
+            if len(set(list_) & set(combo)) == 3:
                 if list_ == x_list:
                     print names[0] + " as " + names[1] + " wins!"
                     return True
                 elif list_ == o_list:
                     print names[0] + " as " + names[1] + " wins!"
                     return True
-
-
 
     # test for catiness/scratchiness
     for combo in combos:
@@ -136,15 +154,15 @@ def check_endgame_conditions(board, turn, names):
         print "Cat's game! Everyone's a loser!"
         raise SystemExit(0)
 
-
     return False
-                
+
+
 def cell_chooser(board, info, turn):
-    """
-    if human, this is easy; we just change value of cell to the player
+    """ if human, we just change value of cell to the player
     elif robot, give to another func
     returns (name of player, piece of player)
     """
+
     gametype, player1_piece, player2_piece = game_info
 
     if gametype == "2":
@@ -173,21 +191,22 @@ def cell_chooser(board, info, turn):
             name = "CPU 2"
             cpu_player(board, player2_piece, turn)
 
-
     if name[0:3] != "CPU":
         while True:
             chosen_cell = raw_input("%s's turn: " % piece)
-            if (chosen_cell in board): # if valid move...
+            if (chosen_cell in board):  # if valid move...
                 # assign current player as the value
                 # not always guaranteed to work if not an int
                 board[int(chosen_cell) - 1] = piece
-                if turn != 9: clear_screen()
+                if turn != 9:
+                    clear_screen()
                 break
             else:
                 print "invalid input/move. say a coordinate e.g. 0"
                 print_board(board)
 
     return (name, piece)
+
 
 def cpu_player(board, piece, turn):
     """
@@ -197,23 +216,23 @@ def cpu_player(board, piece, turn):
     return None
     """
     # winning combinations
-    combos = ((0,1,2),(3,4,5),(6,7,8), # horizontals
-              (0,3,6),(1,4,7),(2,5,8), # verticals
-              (0,4,8),(2,4,6))         # diagonals
+    combos = ((0, 1, 2), (3, 4, 5), (6, 7, 8),  # horizontals
+              (0, 3, 6), (1, 4, 7), (2, 5, 8),  # verticals
+              (0, 4, 8), (2, 4, 6))             # diagonals
     corners = ["1", "3", "7", "9"]
     shuffle(corners)
     cpu = []
     opponent = []
-    
+
     for (index, item) in enumerate(board):
         if item == piece:
             cpu.append(index)
         elif item == "O" or item == "X":
             opponent.append(index)
-    
+
     #print cpu #db
     #print opponent #db
-    
+
     moved = False
 
     # detect chance for win
@@ -221,7 +240,7 @@ def cpu_player(board, piece, turn):
         # if two in what cpu has and two of a winning solution match...
         if (len(set(cpu) & set(combo)) == 2):
             #  and the third one isn't owned by opponent...
-            if len((set(combo) - set(cpu)) & set(opponent)) == 0:    
+            if len((set(combo) - set(cpu)) & set(opponent)) == 0:
                 missing = list(set(combo) - set(cpu))[0]
                 # print "In an attempt to win... "# db!!!
                 print "CPU as %s plays %s" % (piece, board[missing])
@@ -232,7 +251,7 @@ def cpu_player(board, piece, turn):
     for combo in combos:
         if len(set(opponent) & set(combo)) == 2:
             # gives a list e.g. [6]
-            missing = list(set(combo) - set(opponent))[0] 
+            missing = list(set(combo) - set(opponent))[0]
             # print "index of cell opponent is missing = " + str(missing)
             # if I don't own missing already, block
             if missing not in cpu:
@@ -254,15 +273,12 @@ def cpu_player(board, piece, turn):
     # should only happen if no other winning conditions
     else:
         while True:
-            rand_cell = board[randrange(0,9)]
+            rand_cell = board[randrange(0, 9)]
             if (rand_cell != "X") and (rand_cell != "O"):
                 # print "In an act of desparation..."
                 print "CPU as %s plays %s" % (piece, rand_cell)
                 board[board.index(rand_cell)] = piece
                 return None
-
-
-
 
 if __name__ == "__main__":
     # setup
@@ -293,6 +309,3 @@ if __name__ == "__main__":
         turn += 1
 
     raise SystemExit(0)
-
-
-# end of file   
