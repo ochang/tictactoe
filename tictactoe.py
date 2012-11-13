@@ -1,5 +1,7 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+"""simple console based Tic-Tac-Toe game"""
 
 from os import system, name
 from random import shuffle, randrange
@@ -41,7 +43,7 @@ def setup_players():
 
 
 def print_board(board):
-    """  Prints an ASCII art representation of a tictactoe grid. Assumed that
+    """Prints an ASCII art representation of a tictactoe grid. Assumed that
     'board' is given in a list fomat that goes down the first row's colums
     and then proceeds to second row i.e. [first row cells, second row cells,
     third row cells].
@@ -91,7 +93,7 @@ def print_view(board, info, turn):
 
 
 def check_endgame_conditions(board, turn, names):
-    """ Takes list of board, int turn, list of last name and piece. Returns...
+    """Takes list of board, int turn, list of last name and piece. Returns...
         -- True if there is a winner
         -- False if there is still potential winner
         -- Ends script if there can be no winner
@@ -209,8 +211,7 @@ def cell_chooser(board, info, turn):
 
 
 def cpu_player(board, piece, turn):
-    """
-    change board in place with the move of cpu player
+    """Change board in place with the move of cpu player
     equivalent to the changes in board made in cell_chooser
     but with logic to choose the best choice
     return None
@@ -232,9 +233,6 @@ def cpu_player(board, piece, turn):
 
     #print cpu #db
     #print opponent #db
-
-    moved = False
-
     # detect chance for win
     for combo in combos:
         # if two in what cpu has and two of a winning solution match...
@@ -280,9 +278,9 @@ def cpu_player(board, piece, turn):
                 board[board.index(rand_cell)] = piece
                 return None
 
+
 if __name__ == "__main__":
     # setup
-    is_stubborn = False
     id_info = ("", "")
     turn = 1
     board = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
