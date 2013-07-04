@@ -23,6 +23,7 @@ def choose_piece(board, turn, piece):
         if len(cpu & combo) == 2:
             # and the third one isn't owned by opponent...
             if len((combo - cpu) & opponent) == 0:
+                # print "jugular mode activate"
                 missing = (combo - cpu).pop()
                 return (piece, missing)
 
@@ -33,18 +34,21 @@ def choose_piece(board, turn, piece):
             missing = (combo - opponent).pop()
             # if I don't own missing already, block
             if missing not in cpu:
+                # print "nope"
                 return (piece, missing)
 
-    corners = set(["1", "3", "7", "9"])
+    corners = set([1, 3, 7, 9])
     untaken_corners = corners - cpu - opponent
     # if turn less than 2 or corners still open...
     if turn < 2 or len(untaken_corners) != 0:
         # pick an untaken corner cell
         random_corner = sample(untaken_corners, 1)[0]
+        # print "<3 corners"
         return (piece, random_corner)
 
     # naive cpu -- chooses a random unassigned square
     # should only happen if no other winning conditions
     untaken_cells = set(board) - cpu - opponent
     random_cell = sample(untaken_cells, 1)[0]
+    # print "yolo"
     return (piece, random_cell)
