@@ -1,22 +1,12 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-"""simple console based Tic-Tac-Toe game"""
-
 from os import system, name
 from random import shuffle, randrange
 
 
 def clear_screen():
-    """ support for clearing screens on multiple platforms
-    http://stackoverflow.com/questions/517970/ \
-    how-to-clear-python-interpreter-console
-    """
-
-    if name == "nt":
-        system("cls")
-    else:
-        system("clear")
+    system("cls") if name == "nt" else system("clear")
 
 
 def setup_players():
@@ -26,20 +16,15 @@ def setup_players():
     """
 
     # first, figure out who has to play
-    while True:
-        answers = ("1", "2", "c")
-        who = raw_input("players: [1] human, [2] humans, [c]pu only ").lower()
-        if who not in answers:
-            print "invalid choice. choose the value inside the brackets"
-        else:
-            break
-            # we now have a string "1", "2", "c"
+    mode = None
+    while mode not in ("1", "2", "c"):
+        mode = raw_input("players: [1] human, [2] humans, [c]pu only ").lower()
 
     # then, figure out who is X and O
     pieces = ["X", "O"]
     shuffle(pieces)
 
-    return (who, pieces[0], pieces[1])
+    return (mode, pieces[0], pieces[1])
 
 
 def print_board(board):
@@ -279,7 +264,7 @@ def cpu_player(board, piece, turn):
                 return None
 
 
-if __name__ == "__main__":
+def main():
     # setup
     id_info = ("", "")
     turn = 1
@@ -288,7 +273,6 @@ if __name__ == "__main__":
     clear_screen()
     print "Tic-Tac-Toe Program\n"
     game_info = setup_players()
-    clear_screen()
 
     # maximum amount of moves in a tictactoe game is 9
     while turn >= 1 and turn <= 9:
@@ -299,11 +283,12 @@ if __name__ == "__main__":
 
         id_info = cell_chooser(board, game_info, turn)
 
-        # when all cells have been filled
-        # if we've reached this point we haven't broken out and are losers
-        if turn == 9:
-            print "Everyone's a loser!"
-
         turn += 1
+    else:
+        print "Cat's Game! ^.--.^"
 
-    raise SystemExit(0)
+    return 0
+
+
+if __name__ == "__main__":
+    main()
