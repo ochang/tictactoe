@@ -10,6 +10,9 @@ from cpu_player import choose_piece
 NAME_MAP = {"2": ("Player 1", "Player 2"),
             "1": ("Player 1", "CPU 1"),
             "c": ("CPU 1", "CPU 2")}
+WINNING_COMBOS = ((1, 2, 3), (4, 5, 6), (7, 8, 9),  # horizontals
+                  (1, 4, 7), (2, 5, 8), (3, 6, 9),  # verticals
+                  (1, 5, 9), (3, 5, 7))             # diagonals
 
 
 def clear_screen():
@@ -69,21 +72,18 @@ def check_endgame_conditions(board, turn):
         return (False, None)
 
     # winning combinations
-    combos = ((1, 2, 3), (4, 5, 6), (7, 8, 9),  # horizontals
-              (1, 4, 7), (2, 5, 8), (3, 6, 9),  # verticals
-              (1, 5, 9), (3, 5, 7))             # diagonals
     x_owns = set([index for index in board if board[index] == "X"])
     o_owns = set([index for index in board if board[index] == "O"])
 
     # test for winning-ness
-    for winning_combo in combos:
+    for winning_combo in WINNING_COMBOS:
         winning_combo = set(winning_combo)
         if winning_combo.issubset(x_owns) or winning_combo.issubset(o_owns):
             return (True, winning_combo)
 
     # test for catiness/scratchiness
     possible_winning_combos = 0
-    for combo in combos:
+    for combo in WINNING_COMBOS:
         # each cell can only be owned by one player
         # find the number of cells that each player owns in this combo
         o_cells = len(x_owns & set(combo))
@@ -112,7 +112,7 @@ def cell_chooser(board, info, turn):
         piece = player2_piece
 
     if name[0:3] == "CPU":
-        return choose_piece(board, turn)
+        return choose_piece(board, turn, piece)
     else:
         while True:
             try:
@@ -128,6 +128,7 @@ def cell_chooser(board, info, turn):
 
 def main():
     turn = 0
+    player = None
     board = dict.fromkeys(xrange(1, 9+1))
 
     clear_screen()
