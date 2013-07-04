@@ -34,9 +34,9 @@ def print_board(board):
 
     print "-------------------------------------"
     for row in rows:
-        left = board[row[0]] or "_"
-        center = board[row[1]] or "_"
-        right = board[row[2]] or "_"
+        left = board[row[0]] or str(row[0])
+        center = board[row[1]] or str(row[1])
+        right = board[row[2]] or str(row[2])
 
         print "|     " + left + \
               "     |     " + center + "     |     " +  \
