@@ -4,7 +4,7 @@
 from os import system, name
 from random import shuffle
 
-# from cpu_player import cpu_strategy
+from cpu_player import choose_piece
 
 
 NAME_MAP = {"2": ("Player 1", "Player 2"),
@@ -35,7 +35,7 @@ def setup_players():
 def print_board(board):
     """Prints an ASCII art representation of a tictactoe grid.
     """
-    rows = (range(1, 3+1), range(2, 6+1), range(7, 9+1))
+    rows = (range(1, 3+1), range(4, 6+1), range(7, 9+1))
 
     print "-------------------------------------"
     for row in rows:
@@ -58,71 +58,43 @@ def print_view(board, info, turn):
     print_board(board)
 
 
-def check_endgame_conditions(board, turn, names):
+def check_endgame_conditions(board, turn):
     """Takes list of board, int turn, list of last name and piece. Returns...
         -- True if there is a winner
         -- False if there is still potential winner
         -- Ends script if there can be no winner
     """
-
     # have to play 5 rounds before a winner can occur
     if turn <= 5:
-        return False
+        return (False, None)
 
     # winning combinations
-    combos = ((0, 1, 2), (3, 4, 5), (6, 7, 8),  # horizontals
-              (0, 3, 6), (1, 4, 7), (2, 5, 8),  # verticals
-              (0, 4, 8), (2, 4, 6))             # diagonals
-    possible_winning_combos = 0
-    piece = names[1]
-    x_list = []
-    o_list = []
-
-    for (index, item) in enumerate(board):
-        if item == "X":
-            x_list.append(index)
-        elif item == "O":
-            o_list.append(index)
+    combos = ((1, 2, 3), (4, 5, 6), (7, 8, 9),  # horizontals
+              (1, 4, 7), (2, 5, 8), (3, 6, 9),  # verticals
+              (1, 5, 9), (3, 5, 7))             # diagonals
+    x_owns = set([index for index in board if board[index] == "X"])
+    o_owns = set([index for index in board if board[index] == "O"])
 
     # test for winning-ness
-    for combo in combos:
-        for list_ in (x_list, o_list):
-            # from http://stackoverflow.com/questions/1388818/
-            # how-can-i-compare-two-lists-in-python-and-return-matches
-            if len(set(list_) & set(combo)) == 3:
-                if list_ == x_list:
-                    print names[0] + " as " + names[1] + " wins!"
-                    return True
-                elif list_ == o_list:
-                    print names[0] + " as " + names[1] + " wins!"
-                    return True
+    for winning_combo in combos:
+        winning_combo = set(winning_combo)
+        if winning_combo.issubset(x_owns) or winning_combo.issubset(o_owns):
+            return (True, winning_combo)
 
     # test for catiness/scratchiness
+    possible_winning_combos = 0
     for combo in combos:
-        # each cell can only be owned by one person, allows us to say
-        # how many of the cells in combo o owns
-        o_owns = len(set(x_list) & set(combo))
-        # how many of the cells in combo x owns
-        x_owns = len(set(o_list) & set(combo))
+        # each cell can only be owned by one player
+        # find the number of cells that each player owns in this combo
+        o_cells = len(x_owns & set(combo))
+        x_cells = len(o_owns & set(combo))
 
-        # print combo, o_owns, x_owns # db!!! looks kind of cool
-
-        # if nobody owns all of that combo, move on
-        if ((o_owns + x_owns) == 3) or ((o_owns == 1) and (x_owns == 1)):
-            # combo can't be won off of
-            pass
-        elif (turn > 8) and (o_owns == 2) and (piece == "X"):
-            pass
-        elif (turn > 8) and (x_owns == 2) and (piece == "O"):
-            pass
-        else:
+        # if all the combos cells are not taken by different players and
+        # it is still possible for a player to get all the cells of combo
+        if (o_cells + x_cells != 3) and not (o_cells == 1 and x_cells == 1):
             possible_winning_combos += 1
 
-    if possible_winning_combos == 0:
-        print "Cat's game! Everyone's a loser!"
-        raise SystemExit(0)
-
-    return False
+    return (None if possible_winning_combos == 0 else False), None
 
 
 def cell_chooser(board, info, turn):
@@ -140,7 +112,7 @@ def cell_chooser(board, info, turn):
         piece = player2_piece
 
     if name[0:3] == "CPU":
-        return cpu_strategy(board, turn)
+        return choose_piece(board, turn)
     else:
         while True:
             try:
@@ -155,7 +127,7 @@ def cell_chooser(board, info, turn):
 
 
 def main():
-    turn = 1
+    turn = 0
     board = dict.fromkeys(xrange(1, 9+1))
 
     clear_screen()
@@ -163,11 +135,19 @@ def main():
     game_info = setup_players()
 
     # maximum amount of moves in a tictactoe game is 9
-    while turn >= 1 and turn <= 9:
+    while turn <= 9:
         print_view(board, game_info, turn)
-        if check_endgame_conditions(board, turn, id_info):
+
+        # Check endgame conditions and break if necessary
+        winner_exists, combo = check_endgame_conditions(board, turn)
+        if winner_exists:
+            print "{0} wins with combo {1}!".format(player, tuple(combo))
+            break
+        elif winner_exists is None:
+            print "No more winning solutions. :("
             break
 
+        # Pick a piece, either CPU or player
         (player, cell) = cell_chooser(board, game_info, turn)
         # Update the board
         board[cell] = player
