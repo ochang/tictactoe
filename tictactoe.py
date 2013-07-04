@@ -55,7 +55,7 @@ def print_view(board, info, turn):
     # Status line
     players = NAME_MAP[info[0]]
     print "Move {0} -- {1} is {2}, {3} is {4}".format(
-          turn, players[0], info[1], players[1], info[2])
+          turn+1, players[0], info[1], players[1], info[2])
 
     # Board
     print_board(board)
@@ -104,7 +104,7 @@ def cell_chooser(board, info, turn):
     gametype, player1_piece, player2_piece = info
     player1, player2 = NAME_MAP[gametype]
 
-    if turn % 2 == 1:
+    if turn % 2 == 0:
         name = player1
         piece = player1_piece
     else:
@@ -137,6 +137,7 @@ def main():
 
     # maximum amount of moves in a tictactoe game is 9
     while turn <= 9:
+        clear_screen()
         print_view(board, game_info, turn)
 
         # Check endgame conditions and break if necessary
