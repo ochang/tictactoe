@@ -28,27 +28,15 @@ def setup_players():
 
 
 def print_board(board):
-    """Prints an ASCII art representation of a tictactoe grid. Assumed that
-    'board' is given in a list fomat that goes down the first row's colums
-    and then proceeds to second row i.e. [first row cells, second row cells,
-    third row cells].
+    """Prints an ASCII art representation of a tictactoe grid.
     """
+    rows = (range(1,3+1), range(2,6+1), range(7,9+1))
 
-    i = 0
     print "-------------------------------------"
-    for x in range(3):  # for every row...
-        for x in range(3):  # for every column (left, center, right)...
-            # the zero at the end is so we only take one char
-            # avoids issues with printing board with whitespace
-            if i in (0, 3, 6):
-                left = board[i][0]
-            elif i in (1, 4, 7):
-                center = board[i][0]
-            elif i in (2, 5, 8):
-                right = board[i][0]
-            else:
-                print "unexpected index"
-            i += 1  # incerement so next pass is for the next cell
+    for row in rows:
+        left = board[row[0]] or "_"
+        center = board[row[1]] or "_"
+        right = board[row[2]] or "_"
 
         print "|     " + left + \
               "     |     " + center + "     |     " +  \
@@ -57,22 +45,12 @@ def print_board(board):
 
 
 def print_view(board, info, turn):
-    """ print top status bar
-    """
-
-    # two humans
-    if info[0] == "2":
-        print "Move #%i -- Player 1 is %s, Player 2 is %s" % \
-            (turn, info[1], info[2])
-
-    # one human, one CPU; computer is always second
-    elif info[0] == "1":
-        print "Move #%i -- Player 1 is %s, CPU 1 is %s" % \
-            (turn, info[1], info[2])
-
-    elif info[0] == "c":
-        print "Move #%i -- CPU 1 is %s, CPU 2 is %s" % \
-            (turn, info[1], info[2])
+    namemap = {"2": ("Player 1", "Player 2"),
+               "1": ("Player 1", "CPU 1"),
+               "c": ("CPU 1", "CPU 2")}
+    players = namemap[info[0]]
+    print "Move {0} -- {1} is {2}, {3} is {4}".format(
+            turn, players[0], info[1], players[1], info[2])
 
     print_board(board)
 
@@ -268,7 +246,7 @@ def main():
     # setup
     id_info = ("", "")
     turn = 1
-    board = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    board = dict.fromkeys(xrange(1,9+1)) 
 
     clear_screen()
     print "Tic-Tac-Toe Program\n"
