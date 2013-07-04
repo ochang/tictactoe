@@ -18,14 +18,13 @@ def choose_piece(board, turn, piece):
 
     # detect chance for win
     for combo in WINNING_COMBOS:
-        # if two in what cpu has and two of a winning solution match...
+        # if two in what cpu has and two of a winning solution match
+        # and the third one isn't owned by opponent...
         combo = set(combo)
-        if len(cpu & combo) == 2:
-            # and the third one isn't owned by opponent...
-            if len((combo - cpu) & opponent) == 0:
-                # print "jugular mode activate"
-                missing = (combo - cpu).pop()
-                return (piece, missing)
+        if len(cpu & combo) == 2 and len((combo - cpu) & opponent) == 0:
+            # print "jugular mode activate"
+            missing = (combo - cpu).pop()
+            return (piece, missing)
 
     # detect chance to block: if opponent has two of a winning combo
     for combo in WINNING_COMBOS:

@@ -20,13 +20,12 @@ def clear_screen():
 
 
 def setup_players():
-    """
-    sets up which game mode (1 play, 2 play, cpu vs cpu) and pieces
-    returns a tuple with (str, str, str)
+    """Sets up game mode (1 play, 2 play, 2 cpu) and pieces
+    Returns a tuple with (str, str, str)
     """
     mode = None
     while mode not in ("1", "2", "c"):
-        mode = raw_input("players: [1] human, [2] humans, [c]pu only ").lower()
+        mode = raw_input("Players: [1] human, [2] humans, [c]pu only ").lower()
 
     # figure out who is X and O
     pieces = ["X", "O"]
@@ -123,7 +122,7 @@ def cell_chooser(board, info, turn):
             if (chosen_cell in board) and (board[chosen_cell] is None):
                 return (piece, chosen_cell)
             else:
-                print "invalid input/move. say a coordinate e.g. 0"
+                print "Invalid move. Say a coordinate, e.g. 0"
 
 
 def main():
@@ -132,7 +131,7 @@ def main():
     board = dict.fromkeys(xrange(1, 9+1))
 
     clear_screen()
-    print "Tic-Tac-Toe Program\n"
+    print "Tic-Tac-Toe!\n"
     game_info = setup_players()
 
     # maximum amount of moves in a tictactoe game is 9
