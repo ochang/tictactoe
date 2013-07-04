@@ -128,7 +128,7 @@ def cell_chooser(board, info, turn):
     returns (name of player, piece of player)
     """
 
-    gametype, player1_piece, player2_piece = game_info
+    gametype, player1_piece, player2_piece = info
 
     if gametype == "2":
         if (turn % 2 == 1):
